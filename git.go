@@ -14,6 +14,7 @@ type (
 		Enable bool   // Git clone enable
 		Url    string // Git repo url
 		Out    string // Export package
+		Token  string // Gitlab Personal Access Token
 	}
 	// Check package
 	Check struct {
@@ -41,23 +42,6 @@ func (p Plugin) Exec() error {
 			return err
 		}
 		fmt.Printf("%s\n", out)
-		//var stdout, stderr bytes.Buffer
-		//cmd.Stdout = &stdout
-		//cmd.Stderr = &stderr
-		//err := cmd.Run()
-		//if err != nil {
-		//	log.Fatalf("cmd.Run() failed with %s\n", err)
-		//}
-		//outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
-		//fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
-		//out, err := cmd.Output()
-		//if err != nil {
-		//	fmt.Println(err)
-		//}
-		//fmt.Println(string(out))
-		//if err != nil {
-		//	return fmt.Errorf("Error git clone %s", err)
-		//}
 	} else {
 		fmt.Println("enable = false,Ignore pull configuration")
 	}
@@ -72,9 +56,9 @@ func (p Plugin) Exec() error {
 		}
 		var pkglist []string
 		files := strings.Split(string(out), "\n")
-		for _,file := range files{
-			pkg := strings.Split(file,"/")[0]
-			pkglist = append(pkglist,pkg)
+		for _, file := range files {
+			pkg := strings.Split(file, "/")[0]
+			pkglist = append(pkglist, pkg)
 		}
 		recordFiles(removeDuplicateElement(pkglist))
 	}
@@ -105,11 +89,13 @@ func commandGit() string {
 
 // commandClone git clone configuration
 func commandClone(config Config) *exec.Cmd {
+	url := strings.Replace(config.Url, "https://", "", 1)
+	clone_url := fmt.Sprintf("https://oauth2:%s@%s", config.Token, url)
 	return exec.Command(
 		commandGit(),
 		"clone",
-		string(config.Url),
-		string(config.Out),
+		clone_url,
+		config.Out,
 	)
 }
 
@@ -128,7 +114,7 @@ func commandCheckFileList(check Check) *exec.Cmd {
 // write diff list of commit
 func recordFiles(pkglist []string) string {
 	target := strings.Join(pkglist, ",")
-	fmt.Println(target)
+	fmt.Fprintf(os.Stdout, "+ %s\n", target)
 	content := []byte(target)
 	err := ioutil.WriteFile("git.txt", content, 0666)
 	if err != nil {
