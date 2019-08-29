@@ -13,6 +13,20 @@ func TestPlugin_Exec(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "test",
+			fields: fields{
+				Config: Config{
+					Enable: false,
+					Url:    "http://git.keking.cn/tangshd/kk-deploy-configure.git",
+					Out:    "configtest",
+				},
+				Check: Check{
+					Enable: true,
+					Commit: "a838345fbbe940cfcf2678dd465f942f5408ddc3",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

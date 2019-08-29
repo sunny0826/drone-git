@@ -35,24 +35,51 @@ func (p Plugin) Exec() error {
 	// git clone configuration
 	if p.Config.Enable {
 		cmd := commandClone(p.Config)
-		go func() {
-			trace(cmd)
-			cmd.Run()
-		}()
+		trace(cmd)
+		//err := cmd.Run()
+		out, err := cmd.Output()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(out))
+		if err != nil {
+			return fmt.Errorf("Error git clone %s", err)
+		}
 	} else {
 		fmt.Println("enable = false,Ignore pull configuration")
 	}
 
+	//var pkglist []string
 	// git check and write packages file
 	if p.Check.Enable {
 		cmd := commandCheckFileList(p.Check)
-		go func() {
-			trace(cmd)
-			cmd.Run()
-		}()
+		trace(cmd)
+		out, err := cmd.Output()
+		if err != nil {
+			fmt.Println(err)
+		}
+		var pkglist []string
+		files := strings.Split(string(out), "\n")
+		for _,file := range files{
+			pkg := strings.Split(file,"/")[0]
+			pkglist = append(pkglist,pkg)
+		}
+		recordFiles(removeDuplicateElement(pkglist))
 	}
 
 	return nil
+}
+
+func removeDuplicateElement(addrs []string) []string {
+	result := make([]string, 0, len(addrs))
+	temp := map[string]struct{}{}
+	for _, item := range addrs {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result
 }
 
 // commandGit git command bin path
@@ -89,6 +116,7 @@ func commandCheckFileList(check Check) *exec.Cmd {
 // write diff list of commit
 func recordFiles(pkglist []string) string {
 	target := strings.Join(pkglist, ",")
+	fmt.Println(target)
 	content := []byte(target)
 	err := ioutil.WriteFile("git.txt", content, 0666)
 	if err != nil {
