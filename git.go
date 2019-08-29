@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -38,15 +36,20 @@ func (p Plugin) Exec() error {
 	if p.Config.Enable {
 		cmd := commandClone(p.Config)
 		trace(cmd)
-		var stdout, stderr bytes.Buffer
-		cmd.Stdout = &stdout
-		cmd.Stderr = &stderr
-		err := cmd.Run()
+		out, err := cmd.Output()
 		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
+			return err
 		}
-		outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
-		fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
+		fmt.Printf("%s\n", out)
+		//var stdout, stderr bytes.Buffer
+		//cmd.Stdout = &stdout
+		//cmd.Stderr = &stderr
+		//err := cmd.Run()
+		//if err != nil {
+		//	log.Fatalf("cmd.Run() failed with %s\n", err)
+		//}
+		//outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
+		//fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
 		//out, err := cmd.Output()
 		//if err != nil {
 		//	fmt.Println(err)
@@ -105,8 +108,8 @@ func commandClone(config Config) *exec.Cmd {
 	return exec.Command(
 		commandGit(),
 		"clone",
-		config.Url,
-		config.Out,
+		string(config.Url),
+		string(config.Out),
 	)
 }
 
