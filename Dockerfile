@@ -1,11 +1,14 @@
 # 编译阶段
 FROM golang:1.12 as builder
+
 LABEL maintainer="sunnydog0826@gmail.com"
 COPY . /build/
 
 WORKDIR /build
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
+
+RUN ls
 
 # 运行阶段
 FROM alpine
