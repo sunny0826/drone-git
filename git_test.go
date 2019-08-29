@@ -17,8 +17,8 @@ func TestPlugin_Exec(t *testing.T) {
 			name: "test",
 			fields: fields{
 				Config: Config{
-					Enable: false,
-					Url:    "http://git.keking.cn/tangshd/kk-deploy-configure.git",
+					Enable: true,
+					Url:    "https://git.keking.cn/tangshd/kk-deploy-configure.git",
 					Out:    "configtest",
 				},
 				Check: Check{

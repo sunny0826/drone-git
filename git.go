@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -36,20 +38,27 @@ func (p Plugin) Exec() error {
 	if p.Config.Enable {
 		cmd := commandClone(p.Config)
 		trace(cmd)
-		//err := cmd.Run()
-		out, err := cmd.Output()
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		err := cmd.Run()
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
-		fmt.Println(string(out))
-		if err != nil {
-			return fmt.Errorf("Error git clone %s", err)
-		}
+		outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
+		fmt.Printf("out:\n%s\nerr:\n%s\n", outStr, errStr)
+		//out, err := cmd.Output()
+		//if err != nil {
+		//	fmt.Println(err)
+		//}
+		//fmt.Println(string(out))
+		//if err != nil {
+		//	return fmt.Errorf("Error git clone %s", err)
+		//}
 	} else {
 		fmt.Println("enable = false,Ignore pull configuration")
 	}
 
-	//var pkglist []string
 	// git check and write packages file
 	if p.Check.Enable {
 		cmd := commandCheckFileList(p.Check)
