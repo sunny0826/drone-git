@@ -1,4 +1,4 @@
-package main
+package git
 
 import (
 	"fmt"
@@ -36,12 +36,12 @@ func (p Plugin) Exec() error {
 	// git clone configuration
 	if p.Config.Enable {
 		cmd := commandClone(p.Config)
-		trace(cmd)
+		//trace(cmd)
 		out, err := cmd.Output()
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%s\n", out)
+		fmt.Fprintf(os.Stdout, "+ %s\n", out)
 	} else {
 		fmt.Println("enable = false,Ignore pull configuration")
 	}
@@ -49,10 +49,10 @@ func (p Plugin) Exec() error {
 	// git check and write packages file
 	if p.Check.Enable {
 		cmd := commandCheckFileList(p.Check)
-		trace(cmd)
+		//trace(cmd)
 		out, err := cmd.Output()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stdout,err)
 		}
 		var pkglist []string
 		files := strings.Split(string(out), "\n")
@@ -82,13 +82,14 @@ func removeDuplicateElement(addrs []string) []string {
 func commandGit() string {
 	gitProgram, err := exec.LookPath("git")
 	if err != nil {
-		fmt.Println("no 'git' program on path")
+		fmt.Fprintln(os.Stdout,"no 'git' program on path")
 	}
 	return gitProgram
 }
 
 // commandClone git clone configuration
 func commandClone(config Config) *exec.Cmd {
+	fmt.Fprintf(os.Stdout,"+ clone %s to %s\n",config.Url,config.Out)
 	url := strings.Replace(config.Url, "https://", "", 1)
 	clone_url := fmt.Sprintf("https://oauth2:%s@%s", config.Token, url)
 	return exec.Command(
@@ -101,6 +102,7 @@ func commandClone(config Config) *exec.Cmd {
 
 // commandCheckFileList get diff files list command
 func commandCheckFileList(check Check) *exec.Cmd {
+	fmt.Fprintf(os.Stdout,"+ check commit: %s\n",check.Commit)
 	return exec.Command(
 		commandGit(),
 		"diff-tree",
@@ -114,7 +116,7 @@ func commandCheckFileList(check Check) *exec.Cmd {
 // write diff list of commit
 func recordFiles(pkglist []string) string {
 	target := strings.Join(pkglist, ",")
-	fmt.Fprintf(os.Stdout, "+ %s\n", target)
+	fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
 	content := []byte(target)
 	err := ioutil.WriteFile("git.txt", content, 0666)
 	if err != nil {
@@ -127,5 +129,5 @@ func recordFiles(pkglist []string) string {
 // trace writes each command to stdout with the command wrapped in an xml
 // tag so that it can be extracted and displayed in the logs.
 func trace(cmd *exec.Cmd) {
-	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
+	fmt.Fprintf(os.Stdout, "+ run: %s\n", strings.Join(cmd.Args, " "))
 }

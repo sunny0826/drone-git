@@ -1,6 +1,8 @@
-package main
+package git
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestPlugin_Exec(t *testing.T) {
 	type fields struct {
@@ -17,14 +19,14 @@ func TestPlugin_Exec(t *testing.T) {
 			name: "test",
 			fields: fields{
 				Config: Config{
-					Enable: true,
+					Enable: false,
 					Url:    "https://git.keking.cn/tangshd/kk-deploy-configure.git",
 					Out:    "configtest",
-					Token:  "xxx",
+					Token:  "xxx-",
 				},
 				Check: Check{
 					Enable: true,
-					Commit: "a838345fbbe940cfcf2678dd465f942f5408ddc3",
+					Commit: "412c42fed6a68baf5fe2af06add37542282b8221",
 				},
 			},
 		},

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
+	"github.com/sunny0826/drone-git/git"
 	"github.com/urfave/cli"
 	"os"
 )
@@ -66,14 +67,14 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	plugin := Plugin{
-		Config: Config{
+	plugin := git.Plugin{
+		Config: git.Config{
 			Enable: c.Bool("git-config.enable"),
 			Url:    c.String("git-config.url"),
 			Out:    c.String("git-config.out"),
 			Token:  c.String("access.tokens"),
 		},
-		Check: Check{
+		Check: git.Check{
 			Enable: c.Bool("check.enable"),
 			Commit: c.String("commit.sha"),
 			List:   c.StringSlice("check.list"),
