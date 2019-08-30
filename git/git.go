@@ -37,11 +37,10 @@ func (p Plugin) Exec() error {
 	if p.Config.Enable {
 		cmd := commandClone(p.Config)
 		//trace(cmd)
-		out, err := cmd.Output()
+		err  := cmd.Run()
 		if err != nil {
-			return err
+			return fmt.Errorf("+ %s",err)
 		}
-		fmt.Fprintf(os.Stdout, "+ %s\n", out)
 	} else {
 		fmt.Println("enable = false,Ignore pull configuration")
 	}

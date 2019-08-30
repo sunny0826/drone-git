@@ -20,7 +20,7 @@ func TestPlugin_Exec(t *testing.T) {
 			fields: fields{
 				Config: Config{
 					Enable: false,
-					Url:    "https://git.keking.cn/tangshd/kk-deploy-configure.git",
+					Url:    "https://github.com/sunny0826/config",
 					Out:    "configtest",
 					Token:  "xxx-",
 				},

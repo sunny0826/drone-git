@@ -8,6 +8,4 @@ RUN apk update \
 
 ADD bin/drone-git /bin/
 
-RUN cd /bin && ls
-
 ENTRYPOINT ["/bin/drone-git"]
