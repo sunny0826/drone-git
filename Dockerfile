@@ -4,8 +4,10 @@ LABEL maintainer="sunnydog0826@gmail.com"
 
 RUN apk update \
     && apk add --no-cache bash git \
-    && rm -rf /var/cache/apk/* \
+    && rm -rf /var/cache/apk/*
 
 ADD bin/drone-git /bin/
+
+RUN cd /bin && ls
 
 ENTRYPOINT ["/bin/drone-git"]
