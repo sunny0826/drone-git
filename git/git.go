@@ -39,7 +39,8 @@ type (
 func (p Plugin) Exec() error {
 
 	// git clone configuration
-	cloneCmd := commandClone(p.Config)
+	envyaml := Envfile{}
+	cloneCmd := envyaml.commandClone(p.Config)
 	//trace(cmd)
 	err := cloneCmd.Run()
 	if err != nil {
@@ -62,7 +63,6 @@ func (p Plugin) Exec() error {
 				pkglist = append(pkglist, pkg)
 			}
 		}
-		envyaml := Envfile{}
 		envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 	}
 
@@ -91,10 +91,12 @@ func commandGit() string {
 }
 
 // commandClone git clone configuration
-func commandClone(config Config) *exec.Cmd {
+func (env *Envfile) commandClone(config Config) *exec.Cmd {
 	fmt.Fprintf(os.Stdout, "+ clone %s to %s\n", config.Url, config.Out)
 	url := strings.Replace(config.Url, "https://", "", 1)
 	clone_url := fmt.Sprintf("https://oauth2:%s@%s", config.Token, url)
+	env.ConfigPkg = config.Out
+	env.WriteYaml()
 	return exec.Command(
 		commandGit(),
 		"clone",
@@ -119,10 +121,14 @@ func commandCheckFileList(check Check) *exec.Cmd {
 // write diff list of commit
 func (env *Envfile) recordFiles(pkglist []string, out string) {
 	target := strings.Join(pkglist, ",")
-	fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
+	if len(pkglist) == 0 {
+		fmt.Fprintln(os.Stdout, "+ no change packages \n")
+	} else {
+		fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
+	}
 	//content := []byte(target)
 	//env.ReadYaml("./env.yaml")
-	env.ConfigPkg = out
+	//env.ConfigPkg = out
 	env.CheckList = pkglist
 	env.WriteYaml()
 
