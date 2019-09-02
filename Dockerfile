@@ -9,7 +9,9 @@ WORKDIR /build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
 # run step
-FROM alpine:git
+FROM alpine:3.7
+
+RUN apk add --no-cache ca-certificates git git-lfs openssh curl perl
 
 ADD script/clone.sh /bin/
 
