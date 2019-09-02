@@ -29,16 +29,16 @@ func main() {
 		//	Usage:  "git config enable",
 		//	EnvVar: "PLUGIN_GIT_CONF_ENABLE",
 		//},
-		//cli.StringFlag{
-		//	Name:   "git-config.url",
-		//	Usage:  "git config url",
-		//	EnvVar: "PLUGIN_GIT_CONF_URL",
-		//},
-		//cli.StringFlag{
-		//	Name:   "access.tokens",
-		//	Usage:  "Personal Access Token",
-		//	EnvVar: "PLUGIN_TOKEN",
-		//},
+		cli.StringFlag{
+			Name:   "git-config.url",
+			Usage:  "git config url",
+			EnvVar: "PLUGIN_CONFIG_PATH",
+		},
+		cli.StringFlag{
+			Name:   "access.tokens",
+			Usage:  "Personal Access Token",
+			EnvVar: "PLUGIN_TOKEN",
+		},
 		//cli.StringFlag{
 		//	Name:   "git-config.out",
 		//	Usage:  "git config out",

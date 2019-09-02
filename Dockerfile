@@ -11,9 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 # run step
 FROM drone/git
 
-ADD script/clone.sh /bin/
-
 # copy bin from build step
 COPY --from=builder /build/drone-git /bin/
 
-ENTRYPOINT /bin/clone.sh
+ENTRYPOINT /bin/drone-git

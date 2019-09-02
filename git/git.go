@@ -40,16 +40,12 @@ type (
 func (p Plugin) Exec() error {
 
 	// git clone configuration
-	//if p.Config.Enable {
-	//	cmd := commandClone(p.Config)
-	//	//trace(cmd)
-	//	err  := cmd.Run()
-	//	if err != nil {
-	//		return fmt.Errorf("+ %s",err)
-	//	}
-	//} else {
-	//	fmt.Println("enable = false,Ignore pull configuration")
-	//}
+	cloneCmd := commandClone(p.Config)
+	//trace(cmd)
+	err  := cloneCmd.Run()
+	if err != nil {
+		return fmt.Errorf("+ %s",err)
+	}
 
 	// git check and write packages file
 	cmd := commandCheckFileList(p.Check)
