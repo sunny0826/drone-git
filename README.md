@@ -15,8 +15,7 @@ drone plugin of git
   settings:
     token:
       from_secret: git_token
-    git_conf_enable: true
-    git_conf_url: https://github.com/sunny0826/config
-    git_conf_out: configs
+    config_path: https://github.com/sunny0826/configure.git
+    out: configure
     check_enable: true
 ```

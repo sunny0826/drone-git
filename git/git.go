@@ -13,10 +13,9 @@ import (
 type (
 	// Git config
 	Config struct {
-		Enable bool   // Git clone enable
-		Url    string // Git repo url
-		Out    string // Export package
-		Token  string // Gitlab Personal Access Token
+		Url   string // Git repo url
+		Out   string // Export package
+		Token string // Gitlab Personal Access Token
 	}
 	// Check package
 	Check struct {
@@ -42,28 +41,30 @@ func (p Plugin) Exec() error {
 	// git clone configuration
 	cloneCmd := commandClone(p.Config)
 	//trace(cmd)
-	err  := cloneCmd.Run()
+	err := cloneCmd.Run()
 	if err != nil {
-		return fmt.Errorf("+ %s",err)
+		return fmt.Errorf("+ %s", err)
 	}
 
 	// git check and write packages file
-	cmd := commandCheckFileList(p.Check)
-	//trace(cmd)
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Fprintln(os.Stdout, err)
-	}
-	var pkglist []string
-	files := strings.Split(string(out), "\n")
-	for _, file := range files {
-		pkg := strings.Split(file, "/")[0]
-		if pkg != "" && len(strings.Split(pkg, ".")) == 1 {
-			pkglist = append(pkglist, pkg)
+	if p.Check.Enable {
+		cmd := commandCheckFileList(p.Check)
+		//trace(cmd)
+		out, err := cmd.Output()
+		if err != nil {
+			fmt.Fprintln(os.Stdout, err)
 		}
+		var pkglist []string
+		files := strings.Split(string(out), "\n")
+		for _, file := range files {
+			pkg := strings.Split(file, "/")[0]
+			if pkg != "" && len(strings.Split(pkg, ".")) == 1 {
+				pkglist = append(pkglist, pkg)
+			}
+		}
+		envyaml := Envfile{}
+		envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 	}
-	envyaml := Envfile{}
-	envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 
 	return nil
 }
