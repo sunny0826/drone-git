@@ -122,7 +122,7 @@ func commandCheckFileList(check Check) *exec.Cmd {
 func (env *Envfile) recordFiles(pkglist []string, out string) {
 	target := strings.Join(pkglist, ",")
 	if len(pkglist) == 0 {
-		fmt.Fprintln(os.Stdout, "+ no change packages \n")
+		fmt.Fprintln(os.Stdout, "+ no change packages")
 	} else {
 		fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
 	}
