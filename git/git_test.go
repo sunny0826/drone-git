@@ -19,10 +19,10 @@ func TestPlugin_Exec(t *testing.T) {
 			name: "test",
 			fields: fields{
 				Config: Config{
-					Enable: false,
-					Url:    "https://github.com/sunny0826/config",
+					//Enable: false,
+					//Url:    "https://github.com/sunny0826/config",
 					Out:    "configtest",
-					Token:  "xxx-",
+					//Token:  "xxx-",
 				},
 				Check: Check{
 					Enable: true,

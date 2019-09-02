@@ -24,25 +24,30 @@ func main() {
 	app.Action = run
 	app.Version = version
 	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:   "git-config.enable",
-			Usage:  "git config enable",
-			EnvVar: "PLUGIN_GIT_CONF_ENABLE",
-		},
-		cli.StringFlag{
-			Name:   "git-config.url",
-			Usage:  "git config url",
-			EnvVar: "PLUGIN_GIT_CONF_URL",
-		},
-		cli.StringFlag{
-			Name:   "access.tokens",
-			Usage:  "Personal Access Token",
-			EnvVar: "PLUGIN_TOKEN",
-		},
+		//cli.BoolFlag{
+		//	Name:   "git-config.enable",
+		//	Usage:  "git config enable",
+		//	EnvVar: "PLUGIN_GIT_CONF_ENABLE",
+		//},
+		//cli.StringFlag{
+		//	Name:   "git-config.url",
+		//	Usage:  "git config url",
+		//	EnvVar: "PLUGIN_GIT_CONF_URL",
+		//},
+		//cli.StringFlag{
+		//	Name:   "access.tokens",
+		//	Usage:  "Personal Access Token",
+		//	EnvVar: "PLUGIN_TOKEN",
+		//},
+		//cli.StringFlag{
+		//	Name:   "git-config.out",
+		//	Usage:  "git config out",
+		//	EnvVar: "PLUGIN_GIT_CONF_OUT",
+		//},
 		cli.StringFlag{
 			Name:   "git-config.out",
 			Usage:  "git config out",
-			EnvVar: "PLUGIN_GIT_CONF_OUT",
+			EnvVar: "PLUGIN_OUT",
 		},
 		cli.BoolFlag{
 			Name:   "check.enable",

@@ -2,7 +2,9 @@ package git
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -28,39 +30,44 @@ type (
 		Config Config // Git clone configuration
 		Check  Check  // Git check configuration
 	}
+	Envfile struct {
+		ConfigPkg string   `yaml:"configPkg"`
+		CheckList []string `yaml:"checkList"`
+	}
 )
 
 // Exec executes the plugin step
 func (p Plugin) Exec() error {
 
 	// git clone configuration
-	if p.Config.Enable {
-		cmd := commandClone(p.Config)
-		//trace(cmd)
-		err  := cmd.Run()
-		if err != nil {
-			return fmt.Errorf("+ %s",err)
-		}
-	} else {
-		fmt.Println("enable = false,Ignore pull configuration")
-	}
+	//if p.Config.Enable {
+	//	cmd := commandClone(p.Config)
+	//	//trace(cmd)
+	//	err  := cmd.Run()
+	//	if err != nil {
+	//		return fmt.Errorf("+ %s",err)
+	//	}
+	//} else {
+	//	fmt.Println("enable = false,Ignore pull configuration")
+	//}
 
 	// git check and write packages file
-	if p.Check.Enable {
-		cmd := commandCheckFileList(p.Check)
-		//trace(cmd)
-		out, err := cmd.Output()
-		if err != nil {
-			fmt.Fprintln(os.Stdout,err)
-		}
-		var pkglist []string
-		files := strings.Split(string(out), "\n")
-		for _, file := range files {
-			pkg := strings.Split(file, "/")[0]
+	cmd := commandCheckFileList(p.Check)
+	//trace(cmd)
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Fprintln(os.Stdout, err)
+	}
+	var pkglist []string
+	files := strings.Split(string(out), "\n")
+	for _, file := range files {
+		pkg := strings.Split(file, "/")[0]
+		if pkg != "" && len(strings.Split(pkg, ".")) == 1 {
 			pkglist = append(pkglist, pkg)
 		}
-		recordFiles(removeDuplicateElement(pkglist))
 	}
+	envyaml := Envfile{}
+	envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 
 	return nil
 }
@@ -81,14 +88,14 @@ func removeDuplicateElement(addrs []string) []string {
 func commandGit() string {
 	gitProgram, err := exec.LookPath("git")
 	if err != nil {
-		fmt.Fprintln(os.Stdout,"no 'git' program on path")
+		fmt.Fprintln(os.Stdout, "no 'git' program on path")
 	}
 	return gitProgram
 }
 
 // commandClone git clone configuration
 func commandClone(config Config) *exec.Cmd {
-	fmt.Fprintf(os.Stdout,"+ clone %s to %s\n",config.Url,config.Out)
+	fmt.Fprintf(os.Stdout, "+ clone %s to %s\n", config.Url, config.Out)
 	url := strings.Replace(config.Url, "https://", "", 1)
 	clone_url := fmt.Sprintf("https://oauth2:%s@%s", config.Token, url)
 	return exec.Command(
@@ -101,7 +108,7 @@ func commandClone(config Config) *exec.Cmd {
 
 // commandCheckFileList get diff files list command
 func commandCheckFileList(check Check) *exec.Cmd {
-	fmt.Fprintf(os.Stdout,"+ check commit: %s\n",check.Commit)
+	fmt.Fprintf(os.Stdout, "+ check commit: %s\n", check.Commit)
 	return exec.Command(
 		commandGit(),
 		"diff-tree",
@@ -113,16 +120,42 @@ func commandCheckFileList(check Check) *exec.Cmd {
 }
 
 // write diff list of commit
-func recordFiles(pkglist []string) string {
+func (env *Envfile) recordFiles(pkglist []string, out string) {
 	target := strings.Join(pkglist, ",")
 	fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
-	content := []byte(target)
-	err := ioutil.WriteFile("git.txt", content, 0666)
+	//content := []byte(target)
+	//env.ReadYaml("./env.yaml")
+	env.ConfigPkg = out
+	env.CheckList = pkglist
+	env.WriteYaml()
+
+	//err := ioutil.WriteFile("git.txt", content, 0666)
+	//if err != nil {
+	//	fmt.Println("ioutil WriteFile error: ", err)
+	//	os.Exit(0)
+	//}
+}
+
+//func (c *Envfile) ReadYaml(f string) {
+//	buffer, err := ioutil.ReadFile(f)
+//	if err != nil {
+//		log.Fatalf(err.Error())
+//	}
+//	err = yaml.Unmarshal(buffer, &c)
+//	if err != nil {
+//		log.Fatalf(err.Error())
+//	}
+//}
+
+func (c *Envfile) WriteYaml() {
+	buffer, err := yaml.Marshal(&c)
 	if err != nil {
-		fmt.Println("ioutil WriteFile error: ", err)
-		os.Exit(0)
+		log.Fatalf(err.Error())
 	}
-	return fmt.Sprintf("deploy package: %s", target)
+	err = ioutil.WriteFile("./env.yaml", buffer, 0777)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 }
 
 // trace writes each command to stdout with the command wrapped in an xml

@@ -15,7 +15,9 @@ RUN apk update \
     && apk add --no-cache bash git \
     && rm -rf /var/cache/apk/*
 
+ADD script/clone.sh /bin/
+
 # copy bin from build step
 COPY --from=builder /build/drone-git /bin/
 
-ENTRYPOINT ["/bin/drone-git"]
+ENTRYPOINT ["/bin/clone.sh","/bin/drone-git"]
