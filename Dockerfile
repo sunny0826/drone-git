@@ -16,4 +16,4 @@ ADD script/clone.sh /bin/
 # copy bin from build step
 COPY --from=builder /build/drone-git /bin/
 
-ENTRYPOINT ["/bin/clone.sh","/bin/drone-git"]
+ENTRYPOINT "/bin/clone.sh","/bin/drone-git"
