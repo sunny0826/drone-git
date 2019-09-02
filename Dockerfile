@@ -9,11 +9,7 @@ WORKDIR /build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
 # run step
-FROM alpine
-
-RUN apk update \
-    && apk add --no-cache bash git \
-    && rm -rf /var/cache/apk/*
+FROM alpine:git
 
 ADD script/clone.sh /bin/
 
