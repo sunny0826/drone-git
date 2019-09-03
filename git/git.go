@@ -51,6 +51,7 @@ func (p Plugin) Exec() error {
 	if p.Check.Enable {
 		mergeCmd := commandDiffCommit()
 		mergeOut, err := mergeCmd.Output()
+
 		if err != nil {
 			fmt.Fprintln(os.Stdout, err)
 		}

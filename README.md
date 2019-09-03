@@ -18,5 +18,4 @@ drone plugin of git
     config_path: https://github.com/sunny0826/configure.git
     out: configure
     check_enable: true
-    
 ```
