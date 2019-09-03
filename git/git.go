@@ -57,13 +57,14 @@ func (p Plugin) Exec() error {
 		}
 		fmt.Println(mergeOut)
 		if mergeOut != nil {
-			//mergeList := strings.Split(string(mergeOut), " ")
-			//diffCmd := commandDiffCommit(mergeList)
-			//diffOut,err:=diffCmd.Output()
-			//if err != nil {
-			//	fmt.Fprintln(os.Stdout, err)
-			//}
-			fmt.Println(mergeOut)
+			files := strings.Fields(string(mergeOut))
+			var mergelist []string
+			for i, n := range files {
+				if n=="M" {
+					mergelist = append(mergelist,files[i+1])
+				}
+			}
+			envyaml.recordFiles(removeDuplicateElement(mergelist), p.Config.Out)
 		}else {
 			cmd := commandCheckFileList(p.Check)
 			//trace(cmd)

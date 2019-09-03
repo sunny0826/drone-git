@@ -48,6 +48,12 @@ func TestPlugin_Exec(t *testing.T) {
 func Test_commandDiffCommit(t *testing.T) {
 	mergeCmd := commandDiffCommit()
 	mergeOut, _ := mergeCmd.Output()
-	result:= strings.Split(string(mergeOut),"")
-	fmt.Println(result)
+	result := strings.Fields(string(mergeOut))
+	var list []string
+	for i, n := range result {
+		if n=="M" {
+			list = append(list,result[i+1])
+		}
+	}
+	fmt.Println(list)
 }
