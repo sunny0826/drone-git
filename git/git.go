@@ -49,6 +49,20 @@ func (p Plugin) Exec() error {
 
 	// git check and write packages file
 	if p.Check.Enable {
+		mergeCmd := commandMergeInfo(p.Check)
+		mergeOut, err := mergeCmd.Output()
+		if err != nil {
+			fmt.Fprintln(os.Stdout, err)
+		}
+		if mergeOut != nil {
+			mergeList := strings.Split(string(mergeOut), " ")
+			diffCmd := commandDiffCommit(mergeList)
+			diffOut,err:=diffCmd.Output()
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err)
+			}
+			fmt.Println(diffOut)
+		}
 		cmd := commandCheckFileList(p.Check)
 		//trace(cmd)
 		out, err := cmd.Output()
@@ -118,6 +132,30 @@ func commandCheckFileList(check Check) *exec.Cmd {
 	)
 }
 
+// commandMergeInfo get show merge commit
+func commandMergeInfo(check Check) *exec.Cmd {
+	fmt.Fprintln(os.Stdout, "+ check merge\n")
+	return exec.Command(
+		commandGit(),
+		"show",
+		check.Commit,
+		"|",
+		"grep",
+		"Merge:",
+	)
+}
+
+func commandDiffCommit(commits []string) *exec.Cmd {
+	fmt.Fprintf(os.Stdout, "Comparison [%s] and [%s]\n", commits[1], commits[2])
+	return exec.Command(
+		commandGit(),
+		"diff-tree",
+		commits[1],
+		commits[2],
+		"--stat",
+	)
+}
+
 // write diff list of commit
 func (env *Envfile) recordFiles(pkglist []string, out string) {
 	target := strings.Join(pkglist, ",")
@@ -166,3 +204,5 @@ func (c *Envfile) WriteYaml() {
 func trace(cmd *exec.Cmd) {
 	fmt.Fprintf(os.Stdout, "+ run: %s\n", strings.Join(cmd.Args, " "))
 }
+
+// test
