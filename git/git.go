@@ -55,6 +55,7 @@ func (p Plugin) Exec() error {
 			fmt.Fprintln(os.Stdout, err)
 		}
 		if mergeOut != nil {
+			fmt.Println(mergeOut)
 			mergeList := strings.Split(string(mergeOut), " ")
 			diffCmd := commandDiffCommit(mergeList)
 			diffOut,err:=diffCmd.Output()
@@ -62,22 +63,23 @@ func (p Plugin) Exec() error {
 				fmt.Fprintln(os.Stdout, err)
 			}
 			fmt.Println(diffOut)
-		}
-		cmd := commandCheckFileList(p.Check)
-		//trace(cmd)
-		out, err := cmd.Output()
-		if err != nil {
-			fmt.Fprintln(os.Stdout, err)
-		}
-		var pkglist []string
-		files := strings.Split(string(out), "\n")
-		for _, file := range files {
-			pkg := strings.Split(file, "/")[0]
-			if pkg != "" && len(strings.Split(pkg, ".")) == 1 {
-				pkglist = append(pkglist, pkg)
+		}else {
+			cmd := commandCheckFileList(p.Check)
+			//trace(cmd)
+			out, err := cmd.Output()
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err)
 			}
+			var pkglist []string
+			files := strings.Split(string(out), "\n")
+			for _, file := range files {
+				pkg := strings.Split(file, "/")[0]
+				if pkg != "" && len(strings.Split(pkg, ".")) == 1 {
+					pkglist = append(pkglist, pkg)
+				}
+			}
+			envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 		}
-		envyaml.recordFiles(removeDuplicateElement(pkglist), p.Config.Out)
 	}
 
 	return nil
