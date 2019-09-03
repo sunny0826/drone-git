@@ -49,19 +49,20 @@ func (p Plugin) Exec() error {
 
 	// git check and write packages file
 	if p.Check.Enable {
-		mergeCmd := commandMergeInfo(p.Check)
+		mergeCmd := commandDiffCommit()
 		mergeOut, err := mergeCmd.Output()
 		if err != nil {
 			fmt.Fprintln(os.Stdout, err)
 		}
+		fmt.Println(mergeOut)
 		if mergeOut != nil {
-			mergeList := strings.Split(string(mergeOut), " ")
-			diffCmd := commandDiffCommit(mergeList)
-			diffOut,err:=diffCmd.Output()
-			if err != nil {
-				fmt.Fprintln(os.Stdout, err)
-			}
-			fmt.Println(diffOut)
+			//mergeList := strings.Split(string(mergeOut), " ")
+			//diffCmd := commandDiffCommit(mergeList)
+			//diffOut,err:=diffCmd.Output()
+			//if err != nil {
+			//	fmt.Fprintln(os.Stdout, err)
+			//}
+			fmt.Println(mergeOut)
 		}else {
 			cmd := commandCheckFileList(p.Check)
 			//trace(cmd)
@@ -146,13 +147,16 @@ func commandMergeInfo(check Check) *exec.Cmd {
 	)
 }
 
-func commandDiffCommit(commits []string) *exec.Cmd {
-	fmt.Fprintf(os.Stdout, "Comparison [%s] and [%s]\n", commits[1], commits[2])
+func commandDiffCommit() *exec.Cmd {
+	//fmt.Fprintf(os.Stdout, "Comparison [%s] and [%s]\n", commits[1], commits[2])
+	fmt.Println("git diff-tree")
 	return exec.Command(
 		commandGit(),
 		"diff-tree",
-		commits[1],
-		commits[2],
+		"HEAD",
+		"HEAD~",
+		//commits[1],
+		//commits[2],
 	)
 }
 
