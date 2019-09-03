@@ -139,10 +139,11 @@ func commandMergeInfo(check Check) *exec.Cmd {
 	fmt.Fprintln(os.Stdout, "+ check merge\n")
 	return exec.Command(
 		commandGit(),
-		"show",
+		"rev-list",
+		"--parents",
+		"-n",
+		"1",
 		check.Commit,
-		"|grep",
-		"'Merge:'",
 	)
 }
 
