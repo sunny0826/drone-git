@@ -142,7 +142,7 @@ func commandMergeInfo(check Check) *exec.Cmd {
 		"show",
 		check.Commit,
 		"|grep",
-		"Merge:",
+		"'Merge:'",
 	)
 }
 
