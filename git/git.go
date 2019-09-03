@@ -136,7 +136,7 @@ func commandCheckFileList(check Check) *exec.Cmd {
 
 // commandMergeInfo get show merge commit
 func commandMergeInfo(check Check) *exec.Cmd {
-	fmt.Fprintln(os.Stdout, "+ check merge\n")
+	fmt.Fprintln(os.Stdout, "+ check merge")
 	return exec.Command(
 		commandGit(),
 		"rev-list",

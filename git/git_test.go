@@ -1,6 +1,8 @@
 package git
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -20,7 +22,7 @@ func TestPlugin_Exec(t *testing.T) {
 			fields: fields{
 				Config: Config{
 					//Url:    "https://github.com/sunny0826/config",
-					Out:    "configtest",
+					Out: "configtest",
 					//Token:  "xxx-",
 				},
 				Check: Check{
@@ -41,4 +43,11 @@ func TestPlugin_Exec(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_commandDiffCommit(t *testing.T) {
+	mergeCmd := commandDiffCommit()
+	mergeOut, _ := mergeCmd.Output()
+	result:= strings.Split(string(mergeOut),"")
+	fmt.Println(result)
 }
