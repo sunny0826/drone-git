@@ -55,7 +55,6 @@ func (p Plugin) Exec() error {
 			fmt.Fprintln(os.Stdout, err)
 		}
 		if mergeOut != nil {
-			fmt.Println(mergeOut)
 			mergeList := strings.Split(string(mergeOut), " ")
 			diffCmd := commandDiffCommit(mergeList)
 			diffOut,err:=diffCmd.Output()
@@ -154,7 +153,6 @@ func commandDiffCommit(commits []string) *exec.Cmd {
 		"diff-tree",
 		commits[1],
 		commits[2],
-		"--stat",
 	)
 }
 
