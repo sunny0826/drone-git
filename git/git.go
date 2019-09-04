@@ -51,11 +51,9 @@ func (p Plugin) Exec() error {
 	if p.Check.Enable {
 		mergeCmd := commandDiffCommit()
 		mergeOut, err := mergeCmd.Output()
-
 		if err != nil {
 			fmt.Fprintln(os.Stdout, err)
 		}
-		fmt.Println(mergeOut)
 		if mergeOut != nil {
 			files := strings.Fields(string(mergeOut))
 			var mergelist []string
