@@ -166,7 +166,7 @@ func (env *Envfile) recordFiles(pkglist []string, out string) {
 	if len(pkglist) == 0 {
 		fmt.Fprintln(os.Stdout, "+ no change packages")
 	} else {
-		fmt.Fprintf(os.Stdout, "+ change packages: %s\n", target)
+		fmt.Fprintf(os.Stdout, "+ change packages: [%s]\n", target)
 	}
 	//content := []byte(target)
 	//env.ReadYaml("./env.yaml")
