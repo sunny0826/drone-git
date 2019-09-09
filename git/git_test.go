@@ -2,6 +2,8 @@ package git
 
 import (
 	"fmt"
+	"os/exec"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -51,9 +53,39 @@ func Test_commandDiffCommit(t *testing.T) {
 	result := strings.Fields(string(mergeOut))
 	var list []string
 	for i, n := range result {
-		if n=="M" {
-			list = append(list,result[i+1])
+		if n == "M" {
+			list = append(list, result[i+1])
 		}
 	}
 	fmt.Println(list)
+}
+
+func Test_commandClone(t *testing.T) {
+	type args struct {
+		config Config
+	}
+	tests := []struct {
+		name string
+		args args
+		want *exec.Cmd
+	}{
+		// TODO: Add test cases.
+		{
+			name:"test",
+			args:args{
+				config:Config{
+					Url:"https://git.keking.ops/tangshd/kk-deploy-configure.git",
+					Token:"test123",
+					Out:"config",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := commandClone(tt.args.config); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("commandClone() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

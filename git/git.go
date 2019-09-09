@@ -58,12 +58,12 @@ func (p Plugin) Exec() error {
 			files := strings.Fields(string(mergeOut))
 			var mergelist []string
 			for i, n := range files {
-				if n=="M" {
-					mergelist = append(mergelist,files[i+1])
+				if n == "M" {
+					mergelist = append(mergelist, files[i+1])
 				}
 			}
 			envyaml.recordFiles(removeDuplicateElement(mergelist), p.Config.Out)
-		}else {
+		} else {
 			cmd := commandCheckFileList(p.Check)
 			//trace(cmd)
 			out, err := cmd.Output()
@@ -109,8 +109,9 @@ func commandGit() string {
 // commandClone git clone configuration
 func (env *Envfile) commandClone(config Config) *exec.Cmd {
 	fmt.Fprintf(os.Stdout, "+ clone %s to %s\n", config.Url, config.Out)
-	url := strings.Replace(config.Url, "https://", "", 1)
-	clone_url := fmt.Sprintf("https://oauth2:%s@%s", config.Token, url)
+	//url := strings.Replace(config.Url, "https://", "", 1)
+	url := strings.Split(config.Url, "//")
+	clone_url := fmt.Sprintf("%s//oauth2:%s@%s", url[0], config.Token, url[1])
 	env.ConfigPkg = config.Out
 	env.WriteYaml()
 	return exec.Command(
